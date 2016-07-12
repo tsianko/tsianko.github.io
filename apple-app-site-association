@@ -6,7 +6,7 @@
             "details": [
                 {
                     "appID": "EFH38368XS.ifengNews",
-                    "paths": [ "*" ]
+                    "paths": [ "/wakeupiOS/ifengnews/*" ]
                 }
             ]
         }
