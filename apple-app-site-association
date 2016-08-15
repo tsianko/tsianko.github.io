@@ -1,14 +1,20 @@
 
 
-    {
+{
         "applinks": {
             "apps": [],
             "details": [
                 {
                     "appID": "EFH38368XS.ifengNews",
                     "paths": [ "/wakeupiOS/ifengnews/*" ]
+                },
+                {
+                    "appID": "UNY4KWE8NR.com.ifeng.ifengnews1",
+                    "paths": [ "/wakeupiOS/ifengnewsExpolre1/*" ]
                 }
+
             ]
         }
     }
+
 
