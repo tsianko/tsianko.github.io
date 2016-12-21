@@ -1,20 +1,26 @@
 
-
 {
-        "applinks": {
-            "apps": [],
-            "details": [
-                {
-                    "appID": "EFH38368XS.ifengNews",
-                    "paths": [ "/wakeupiOS/ifengnews/*" ]
-                },
-                {
-                    "appID": "UNY4KWE8NR.com.ifeng.ifengnews1",
-                    "paths": [ "/wakeupiOS/ifengnewsExpolre1/*" ]
-                }
-
-            ]
-        }
-    }
+"applinks":{
+"apps": [],
+"details": [
+{
+"appID": "EFH38368XS.ifengNews",
+"paths":["/gonativeIndex/*"]
+},
+{
+"appID": "UNY4KWE8NR.com.ifeng.ifengnews1",
+"paths": [
+                    "/wakeupiOS/ifengnewsExpolre1/*"
+                ]
+},
+{
+"appID": "EFH38368XS.ifengnewsexplore",
+"paths": [
+                    "/wakeupiOS/ifengnewsExpolre2/*"
+                ]
+}
+]
+}
+}​
 
 
