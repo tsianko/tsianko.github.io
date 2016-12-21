@@ -5,7 +5,7 @@
 "details": [
 {
 "appID": "EFH38368XS.ifengNews",
-"paths":["*gonativeIndex/*"]
+"paths":["/*gonativeIndex/*"]
 },
 {
 "appID": "UNY4KWE8NR.com.ifeng.ifengnews1",
