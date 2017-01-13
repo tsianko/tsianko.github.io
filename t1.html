@@ -14,6 +14,243 @@
   <body>
   <a href="https://tsianko.github.io/test1">测试打开</a>
     
-    <script src="http://mjs.sinaimg.cn/wap/module/download_app/201601121759/js/index.js"></script>
+    (function(win,doc){
+    var _shareTipsPic = {
+            android : 'http://n.sinaimg.cn/dae7ff0c/20151013/popup_android.png',
+            ios     : 'http://n.sinaimg.cn/dae7ff0c/20151013/popup_ios.png'
+        },
+        installDownloadUrl = {
+            ios:doc.querySelector('.ioslink').getAttribute('data-src') || '',
+            android: doc.querySelector('.androidlink').getAttribute('data-src') || ''
+        };
+
+    var RedirectToNative = {
+        init: function(config) {
+            var self = this,
+                isQQA = self.isQQ();
+            self.platform = self._UA();
+            
+            // pc涓� 浠�涔堥兘涓嶅鐞�  pc璁块棶涓嬪彲鑳絟ref鍙互閾炬帴鍘诲叾浠栧湴鍧�
+            if(!self.platform) return;
+            if (self.platform == 'ios') {
+              self.installUrl = config.iosInstallUrl;
+              self.nativeUrl = config.iosNativeUrl;
+              self.openTime = config.iosOpenTime || 800;
+            } else {
+              self.installUrl = config.androidInstallUrl;
+              self.nativeUrl = config.androidNativeUrl;
+              self.openTime = config.androidOpenTime || 3000;
+            }
+            self._gotoNative();
+        },
+        isQQ: function(){
+            var ua = navigator.userAgent.toLowerCase();
+            var _isQQ = ua.indexOf('qq')>-1;
+
+            if( _isQQ ){
+                return true;
+            }
+            return false;
+        },
+        /**
+         * [_gotoNative 璺宠浆鑷硁ative锛宯ative瓒呮椂鎵撲笉寮�灏卞幓涓嬭浇]
+         * @return 
+         */
+        _gotoNative: function() {
+            var self = this;
+            var startTime = Date.now(),
+                doc = document,
+                body = doc.body,
+                iframe = doc.createElement('iframe');
+                iframe.id = 'J_redirectNativeFrame';
+                iframe.style.display = 'none';
+                iframe.src = self.nativeUrl;
+
+            //杩愯鍦╤ead涓�
+            if(!body) {
+                setTimeout(function(){
+                    doc.body.appendChild(iframe);
+                }, 0);
+            } else {
+                body.appendChild(iframe);
+            }
+            
+            setTimeout(function() {
+                doc.body.removeChild(iframe);
+                self._gotoDownload(startTime);
+                /**
+                 * 娴嬭瘯鏃堕棿璁剧疆灏忎簬800ms鏃讹紝鍦╝ndroid涓嬬殑UC娴忚鍣ㄤ細鎵撳紑native app鏃跺苟涓嬭浇apk锛�
+                 * 娴嬭瘯android+UC涓嬫墦寮�native鐨勬椂闂存渶濂藉ぇ浜�800ms;
+                 */
+            }, self.openTime);
+        },
+        /**
+         * [_gotoInstall 鍘讳笅杞絔
+         * @param  {[type]} startTime [寮�濮嬫椂闂碷
+         * @return 
+         */
+        _gotoDownload: function(startTime) {
+            var self = this;
+            var endTime = Date.now();
+            if (endTime - startTime < self.openTime + 500) {
+                window.location = self.installUrl;
+            }
+        },
+        /**
+         * [_UA 妫�娴嬪钩鍙癩
+         * @return string [ios|android| ]
+         */
+        _UA: function() {
+            var ua = navigator.userAgent;
+            var a = ua.match(/Android/i);
+            // ios
+            if (ua.match(/iphone|ipod|ipad/ig)){
+                return 'ios';
+            } else if (ua.match(/Android/i)) {
+                return 'android';
+            } else {
+                return '';
+            }
+        }
+    }
+    function open_or_download_app() {
+        var data = {},
+            type = doc.querySelector('page-type');
+        
+        switch(type){
+            case TYPE.finance:
+                data = {
+                    iosNativeUrl    : 'sinafinance://com.sina.stock.url.identifier?parameter=',
+                    androidNativeUrl: 'sinafinance://type=1&'
+                };
+                break;
+            case TYPE.sports:
+            case TYPE.blog:
+            default:
+                data = {
+                    iosNativeUrl: 'sinanews://newsid=',
+                    androidNativeUrl: 'sinanews://newsid='
+                };
+                break;
+
+        }
+                
+        var jumpConfig = {};
+        
+        jumpConfig = {
+            iosInstallUrl       : installDownloadUrl.ios,
+            androidInstallUrl   : installDownloadUrl.android,
+            iosNativeUrl        : data.iosNativeUrl,
+            androidNativeUrl    : data.androidNativeUrl,
+            openByWeixin        : data.weixn
+        };
+        RedirectToNative.init(jumpConfig);
+    } 
+
+    function bindEventForApp(obj, ev, fn){
+        if(!document.addEventListener){
+            obj.attachEvent(ev,fn);
+        }
+        else{
+            obj.addEventListener(ev,fn,false);
+        }
+    }
+    function isWeixin(){
+        var ua = navigator.userAgent.toLowerCase();
+        if(ua.match(/MicroMessenger/i)=="micromessenger")  {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    function getDomInfo(dom){
+        var _className = dom.className,
+            domInfo = {};
+
+        domInfo.isIosLink = _className.indexOf(_platClassName.ios)>-1;
+        domInfo.isAndroidLink = _className.indexOf(_platClassName.android)>-1;
+        domInfo.downloadURL = '';
+
+        if(domInfo.isIosLink || domInfo.isAndroidLink){
+            domInfo.downloadURL = dom.getAttribute('data-src');        
+        }
+        return domInfo;
+
+    }
+    function findTargetInfo(dom){
+        var maxDeep = 5,
+            domInfo = {};
+        
+        for(var o=0;o<maxDeep;o++){
+            domInfo = getDomInfo(dom);
+            if(domInfo.isIosLink || domInfo.isAndroidLink){
+                break;        
+            }else{
+                dom = dom.parentElement;
+            }
+
+        }
+        return domInfo;
+    }
+            
+    function bindTarget($obj){
+        var platform    = getPlatform(),
+            $img        = doc.getElementById('j_float_nav'),
+            $nav_float  = doc.body.querySelector('.j_share_bg'),
+            _isWeixin   = isWeixin();
+
+        bindEventForApp($obj,'click',function(e){
+            var dom         = e.target,
+                targetInfo  = findTargetInfo(dom);
+
+            if(_isWeixin){
+                if(targetInfo.isIosLink || targetInfo.isAndroidLink){
+                    if(platform == 'ios'){
+                        $img.src = _shareTipsPic.ios;
+                    }
+                    else{
+                        $img.src = _shareTipsPic.android;    
+                    }
+                    $nav_float.style.display = 'block';
+                }else{
+                    $nav_float.style.display = 'none';
+                }
+            }
+            else{
+                if(targetInfo.isIosLink || targetInfo.isAndroidLink){
+                    win.location.href = targetInfo.downloadURL;
+                }
+            }
+        
+        });
+    }
+    function getPlatform() {
+        var ua = navigator.userAgent;        
+        // ios
+        if (ua.match(/iphone|ipod/ig)){
+            return 'ios';
+        } else if (ua.match(/Android/i)) {
+            return 'android';
+        } else {
+            return '';
+        }
+    }
+    function initBind(){
+        var iosLink     = doc.body.querySelector('.'+_platClassName.ios),
+            androidlink = doc.body.querySelector('.'+_platClassName.android),
+            nav_float   = doc.body.querySelector('.j_share_bg');
+
+        bindTarget( iosLink );
+        bindTarget( androidlink );
+        bindTarget( nav_float );
+    }
+    var _platClassName= {ios:'ioslink',android:'androidlink'},    
+        TYPE = {finance:'finance',news:'news',sports:'sports',blog:'blog'};
+    win.onload = function(){
+        _shareTipsPic = shareTipsPic || _shareTipsPic;
+        open_or_download_app();
+        initBind();
+    };
+})(window,document);
   <body>
   </html>
